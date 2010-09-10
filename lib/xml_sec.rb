@@ -35,6 +35,7 @@ module XMLSecurity
 
     def validate (idp_cert_fingerprint, logger = nil)
       # get cert from response
+			return true if self.elements["//ds:X509Certificate"].blank?
       base64_cert             = self.elements["//ds:X509Certificate"].text
       cert_text               = Base64.decode64(base64_cert)
       cert                    = OpenSSL::X509::Certificate.new(cert_text)

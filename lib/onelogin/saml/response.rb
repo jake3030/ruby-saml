@@ -4,8 +4,11 @@ require "xml_sec"
 module Onelogin::Saml
   class Response
     def initialize(response)
+			
       @response = response
       @document = XMLSecurity::SignedDocument.new(Base64.decode64(@response))
+			@document = XMLSecurity::SignedDocument.new(@response) if @document.root.blank?
+			@document = REXML::Document.new(@response) if @document.root.blank?
     end
     
     def logger=(val)
@@ -23,7 +26,8 @@ module Onelogin::Saml
     end
 
     def name_id
-      @document.elements["/samlp:Response/saml:Assertion/saml:Subject/saml:NameID"].text
+      node = @document.elements["/samlp:Response/saml:Assertion/saml:Subject/saml:NameID"] || @document.elements["/samlp:Response/Assertion/Subject/NameID"]
+			node.text.strip
     end
   end
 end
